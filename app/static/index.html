@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NetShow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:      oklch(0.973 0.011 78);
+    --paper-2:    oklch(0.949 0.015 78);
+    --paper-3:    oklch(0.922 0.019 78);
+    --ink:        oklch(0.255 0.022 55);
+    --ink-2:      oklch(0.452 0.020 55);
+    --ink-3:      oklch(0.625 0.016 55);
+    --rule:       oklch(0.882 0.014 78);
+    --rule-soft:  oklch(0.921 0.012 78);
+    --rust:       oklch(0.545 0.160 42);
+    --rust-soft:  oklch(0.905 0.048 50);
+    --moss:       oklch(0.545 0.100 152);
+    --amber:      oklch(0.672 0.135 76);
+    --brick:      oklch(0.505 0.175 27);
+    --brick-soft: oklch(0.918 0.045 27);
+
+    --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+    --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 72px;
+
+    --r-sm: 6px; --r-md: 10px; --r-lg: 16px;
+    --lift: 0 1px 2px oklch(0.30 0.02 55 / 0.05), 0 8px 24px -12px oklch(0.30 0.02 55 / 0.14);
+
+    --font-body: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Instrument Serif', 'Vazirmatn', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    --out: cubic-bezier(0.16, 1, 0.3, 1);
+    --out-q: cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  html[lang="fa"]{ --font-display: 'Vazirmatn', serif; }
+
+  *{ box-sizing: border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num, .mono{ font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-feature-settings: "liga" 0; }
+  h1,h2,h3{ text-wrap: balance; margin:0; }
+  a{ color: var(--rust); }
+
+  .shell{ max-width: 1120px; margin: 0 auto; padding: var(--s-5) var(--s-4) var(--s-8); }
+  @media (min-width: 900px){ .shell{ padding: var(--s-7) var(--s-6) var(--s-8); } }
+
+  /* ---------- masthead ---------- */
+  .masthead{
+    display:flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+    gap: var(--s-4); padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--ink);
+  }
+  .brand{ display:flex; align-items: baseline; gap: var(--s-3); }
+  .wordmark{
+    font-family: var(--font-display); font-size: clamp(2.4rem, 6vw, 3.4rem);
+    line-height: 0.95; letter-spacing: -0.015em;
+  }
+  html[lang="fa"] .wordmark{ font-weight: 700; letter-spacing: -0.02em; }
+  .wordmark i{ font-style: italic; color: var(--rust); }
+  .pulse{
+    inline-size: 9px; block-size: 9px; border-radius: 50%;
+    background: var(--moss); align-self: center; flex: none;
+    animation: beat 2.6s var(--out-q) infinite;
+  }
+  .pulse[data-state="down"]{ background: var(--brick); }
+  @keyframes beat{ 0%{ box-shadow: 0 0 0 0 oklch(0.545 0.100 152 / 0.5);} 60%,100%{ box-shadow: 0 0 0 10px oklch(0.545 0.100 152 / 0);} }
+  .tagline{ color: var(--ink-2); font-size: 0.9375rem; max-width: 46ch; margin-top: var(--s-2); }
+
+  .controls{ display:flex; align-items:center; gap: var(--s-3); margin-inline-start: auto; }
+  .stamp{ font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+  html[lang="fa"] .stamp{ letter-spacing: 0; text-transform: none; }
+
+  button{ font: inherit; color: inherit; cursor: pointer; }
+  .btn{
+    display:inline-flex; align-items:center; gap: var(--s-2);
+    background: transparent; border: 1px solid var(--rule);
+    border-radius: var(--r-sm); padding: 7px 12px; min-height: 36px;
+    font-size: 0.875rem; transition: background .14s var(--out-q), border-color .14s var(--out-q), transform .14s var(--out-q);
+  }
+  .btn:hover{ background: var(--paper-2); border-color: var(--ink-3); }
+  .btn:active{ transform: scale(0.97); }
+  .btn:focus-visible{ outline: 2px solid var(--rust); outline-offset: 2px; }
+  .btn .spin{ display:inline-block; animation: spin 1s linear infinite; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .langs{ display:flex; border:1px solid var(--rule); border-radius: var(--r-sm); overflow:hidden; }
+  .langs button{
+    background: transparent; border:0; padding: 7px 11px; min-height:36px;
+    font-size: 0.8125rem; color: var(--ink-2); transition: background .14s var(--out-q), color .14s var(--out-q);
+  }
+  .langs button + button{ border-inline-start: 1px solid var(--rule); }
+  .langs button[aria-pressed="true"]{ background: var(--ink); color: var(--paper); }
+  .langs button:focus-visible{ outline: 2px solid var(--rust); outline-offset: -2px; }
+
+  /* ---------- host strip ---------- */
+  .strip{
+    display:grid; gap: var(--s-5) var(--s-7); margin-top: var(--s-6);
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  }
+  .meter .top{ display:flex; align-items: baseline; justify-content: space-between; gap: var(--s-2); }
+  .meter .label{ font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); }
+  html[lang="fa"] .meter .label{ letter-spacing: 0; text-transform:none; font-size: 0.8125rem; }
+  .meter .val{ font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 1.5rem; letter-spacing: -0.02em; }
+  .meter .val small{ font-size: 0.8125rem; color: var(--ink-3); margin-inline-start: 2px; }
+  .track{ position:relative; block-size: 3px; background: var(--paper-3); margin-top: var(--s-3); overflow:hidden; }
+  .track span{
+    position:absolute; inset-block:0; inset-inline-start:0; inline-size: 0%;
+    background: var(--ink); transition: inline-size .55s var(--out);
+  }
+  .track span[data-load="warn"]{ background: var(--amber); }
+  .track span[data-load="hot"]{ background: var(--brick); }
+  .meter .sub{ margin-top: var(--s-2); font-size: 0.8125rem; color: var(--ink-3); }
+
+  /* ---------- section headers ---------- */
+  .sec{ margin-top: var(--s-8); }
+  .sec-head{ display:flex; align-items:baseline; justify-content: space-between; gap: var(--s-4); }
+  .sec-head h2{ font-family: var(--font-display); font-size: 1.75rem; letter-spacing: -0.01em; }
+  html[lang="fa"] .sec-head h2{ font-weight:700; font-size: 1.5rem; }
+  .count{ font-size: 0.8125rem; color: var(--ink-3); }
+
+  /* ---------- ledger ---------- */
+  .ledger{ margin-top: var(--s-4); border-top: 1px solid var(--rule); }
+  .colhead{
+    display:none; gap: var(--s-4); padding: var(--s-2) 0;
+    font-size: 0.6875rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  html[lang="fa"] .colhead{ letter-spacing:0; text-transform:none; font-size: 0.75rem; }
+  .row{ border-bottom: 1px solid var(--rule-soft); }
+  .row-main{
+    display:grid; gap: var(--s-3) var(--s-4); inline-size: 100%;
+    background: transparent; border:0; text-align: start;
+    padding: var(--s-4) var(--s-2); border-radius: var(--r-sm);
+    grid-template-columns: 14px 1fr auto;
+    transition: background .14s var(--out-q);
+  }
+  .row-main:hover{ background: var(--paper-2); }
+  .row-main:focus-visible{ outline: 2px solid var(--rust); outline-offset: -2px; }
+  .colhead, .row-main{ align-items: center; }
+  @media (min-width: 860px){
+    .colhead{ display:grid; grid-template-columns: 14px minmax(180px,1.4fr) 86px 92px 78px 96px 120px 18px; padding-inline: var(--s-2); }
+    .row-main{ grid-template-columns: 14px minmax(180px,1.4fr) 86px 92px 78px 96px 120px 18px; }
+  }
+  .dot{ inline-size: 9px; block-size: 9px; border-radius: 50%; background: var(--ink-3); justify-self: center; }
+  .dot[data-s="up"]{ background: var(--moss); }
+  .dot[data-s="warn"]{ background: var(--amber); }
+  .dot[data-s="down"]{ background: var(--brick); }
+  .dot[data-s="pending"]{ background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+  .name{ font-size: 1.0625rem; letter-spacing: -0.005em; }
+  .host{ font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-3); direction: ltr; unicode-bidi: isolate; margin-top: 1px; }
+  .chip{
+    display:inline-block; font-size: 0.6875rem; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--ink-2); background: var(--paper-3); border-radius: 999px; padding: 2px 9px;
+  }
+  .metric{ font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 0.9375rem; direction: ltr; unicode-bidi: isolate; }
+  .metric small{ color: var(--ink-3); font-size: 0.75rem; }
+  .metric.dim{ color: var(--ink-3); }
+  .metric.bad{ color: var(--brick); }
+  .m-label{ display:block; font-family: var(--font-body); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 1px; }
+  html[lang="fa"] .m-label{ letter-spacing:0; text-transform:none; font-size: 0.75rem; }
+  @media (min-width: 860px){ .m-label{ display:none; } }
+  .spark{ direction: ltr; }
+  .spark svg{ display:block; inline-size: 100%; block-size: 30px; overflow: visible; }
+  .caret{ color: var(--ink-3); justify-self: end; transition: transform .2s var(--out-q); }
+  .row[data-open="true"] .caret{ transform: rotate(180deg); }
+
+  .cells{ display: contents; }
+  @media (max-width: 859px){
+    .row-main{ grid-template-columns: 14px 1fr auto; }
+    .cells{ display:grid; grid-column: 2 / -1; grid-template-columns: repeat(auto-fit, minmax(74px, 1fr)); gap: var(--s-3) var(--s-4); }
+    .spark{ grid-column: 2 / -1; }
+  }
+
+  .detail{ display:none; padding: 0 var(--s-2) var(--s-5); }
+  .row[data-open="true"] .detail{ display:block; animation: fade .28s var(--out) both; }
+  @keyframes fade{ from{ opacity:0; transform: translateY(-4px);} to{ opacity:1; transform:none;} }
+  .facts{ display:grid; gap: var(--s-3) var(--s-6); grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); }
+  .fact dt{ font-size: 0.75rem; color: var(--ink-3); }
+  .fact dd{ margin: 2px 0 0; font-family: var(--font-mono); font-size: 0.875rem; direction: ltr; unicode-bidi: isolate; }
+  html[lang="fa"] .fact dd.txt{ direction: rtl; font-family: var(--font-body); }
+  .note{
+    margin-top: var(--s-4); padding: var(--s-3) var(--s-4); border-radius: var(--r-md);
+    background: var(--brick-soft); color: var(--ink); font-size: 0.875rem;
+  }
+
+  /* ---------- events ---------- */
+  .events{ margin-top: var(--s-4); }
+  .ev{ display:grid; grid-template-columns: 78px 10px 1fr; gap: var(--s-3); align-items: baseline; padding: var(--s-3) 0; border-bottom: 1px solid var(--rule-soft); }
+  .ev time{ font-family: var(--font-mono); font-size: 0.8125rem; color: var(--ink-3); direction: ltr; unicode-bidi: isolate; }
+  .ev .tick{ inline-size: 7px; block-size: 7px; border-radius: 50%; background: var(--ink-3); justify-self:center; transform: translateY(6px); }
+  .ev[data-k="down"] .tick{ background: var(--brick); }
+  .ev[data-k="up"] .tick{ background: var(--moss); }
+  .ev[data-k="ssl"] .tick{ background: var(--amber); }
+  .ev b{ font-weight: 500; }
+  .ev p{ margin: 0; font-size: 0.9375rem; color: var(--ink-2); }
+
+  /* ---------- states ---------- */
+  .skel{ padding: var(--s-4) var(--s-2); border-bottom: 1px solid var(--rule-soft); display:grid; gap: var(--s-3); }
+  .bar{ block-size: 10px; border-radius: 3px; background: linear-gradient(90deg, var(--paper-2), var(--paper-3), var(--paper-2)); background-size: 200% 100%; animation: sweep 1.4s linear infinite; }
+  @keyframes sweep{ to{ background-position: -200% 0; } }
+  .empty{ padding: var(--s-7) var(--s-2); text-align: center; color: var(--ink-2); }
+  .empty h3{ font-family: var(--font-display); font-size: 1.375rem; margin-bottom: var(--s-2); }
+  .empty code{ font-family: var(--font-mono); font-size: 0.8125rem; background: var(--paper-2); padding: 2px 6px; border-radius: 4px; direction: ltr; unicode-bidi: isolate; }
+  .banner{
+    display:none; margin-top: var(--s-5); padding: var(--s-4) var(--s-5); border-radius: var(--r-lg);
+    background: var(--paper-2); box-shadow: var(--lift);
+  }
+  .banner[data-show="true"]{ display:block; }
+  .banner h3{ font-size: 1rem; }
+  .banner p{ margin: var(--s-2) 0 var(--s-4); color: var(--ink-2); font-size: 0.9375rem; max-width: 62ch; }
+  .flag{
+    display:none; align-items:center; gap: var(--s-2); font-size: 0.75rem; color: var(--rust);
+    background: var(--rust-soft); border-radius: 999px; padding: 3px 10px;
+  }
+  .flag[data-show="true"]{ display:inline-flex; }
+
+  footer{ margin-top: var(--s-8); padding-top: var(--s-4); border-top: 1px solid var(--rule); font-size: 0.8125rem; color: var(--ink-3); display:flex; flex-wrap:wrap; gap: var(--s-4); justify-content: space-between; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="masthead">
+    <div>
+      <div class="brand">
+        <span class="pulse" id="pulse" aria-hidden="true"></span>
+        <h1 class="wordmark">Net<i>Show</i></h1>
+      </div>
+      <p class="tagline" data-t="tagline"></p>
+    </div>
+    <div class="controls">
+      <span class="flag" id="demoFlag" data-t="demoFlag"></span>
+      <span class="stamp" id="stamp"></span>
+      <button class="btn" id="refresh"><span id="refreshIcon">↻</span><span data-t="refresh"></span></button>
+      <div class="langs" role="group" aria-label="Language">
+        <button id="langEn" aria-pressed="true">EN</button>
+        <button id="langFa" aria-pressed="false">فارسی</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="banner" id="banner">
+    <h3 data-t="errTitle"></h3>
+    <p data-t="errBody"></p>
+    <button class="btn" id="retry" data-t="retry"></button>
+  </div>
+
+  <section class="strip" id="strip" aria-live="polite"></section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2 data-t="targets"></h2>
+      <span class="count" id="tCount"></span>
+    </div>
+    <div class="ledger">
+      <div class="colhead">
+        <span></span>
+        <span data-t="cTarget"></span>
+        <span data-t="cKind"></span>
+        <span data-t="cLatency"></span>
+        <span data-t="cLoss"></span>
+        <span data-t="cUptime"></span>
+        <span data-t="cTrend"></span>
+        <span></span>
+      </div>
+      <div id="rows"></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2 data-t="events"></h2>
+      <span class="count" id="eCount"></span>
+    </div>
+    <div class="events" id="evs"></div>
+  </section>
+
+  <footer>
+    <span data-t="footInterval" id="footInterval"></span>
+    <span>NetShow · MIT · <a href="https://github.com/imrezafattahi/NetShow">GitHub</a></span>
+  </footer>
+</div>
+
+<script>
+const T = {
+  en: {
+    tagline: "Ping, HTTP, TLS certificates and host resources, watched by one small Python service.",
+    refresh: "Refresh", targets: "Monitored targets", events: "Recent events",
+    cTarget: "Target", cKind: "Type", cLatency: "Latency", cLoss: "Loss", cUptime: "Uptime 24h", cTrend: "Trend",
+    cpu: "Processor", ram: "Memory", disk: "Disk", net: "Network",
+    cpuSub: "load across all cores", ramSub: "of {total} GB in use", diskSub: "of {total} GB used", netSub: "down / up right now",
+    up: "Healthy", down: "Down", warn: "Degraded", pending: "Waiting for first check",
+    kindPing: "Ping", kindHttp: "HTTP", kindTcp: "TCP",
+    fHost: "Address", fLast: "Last check", fCode: "Response code", fSsl: "TLS expires in", fMin: "Best latency", fAvg: "Average latency", fMax: "Worst latency", fChecks: "Samples stored",
+    days: "{n} days", none: "n/a",
+    noTargets: "No targets defined yet",
+    noTargetsHint: "Add them to config.json and restart the service.",
+    noEvents: "Nothing has gone wrong yet. Events show up here when a target drops, recovers, or a certificate gets close to expiry.",
+    errTitle: "Cannot reach the NetShow API",
+    errBody: "Make sure the service is running (uvicorn app.main:app) and reachable at this address. Sample data is shown below so you can still see the layout.",
+    retry: "Try again", demoFlag: "sample data",
+    stampNow: "updated just now", stampMin: "updated {n} min ago",
+    footInterval: "Checks run every {n} seconds",
+    evDown: "stopped responding", evUp: "is back online", evSsl: "certificate expires in {n} days"
+  },
+  fa: {
+    tagline: "پینگ، HTTP، گواهی TLS و منابع سرور، همه با یک سرویس کوچک پایتونی.",
+    refresh: "به‌روزرسانی", targets: "هدف‌های پایش", events: "رخدادهای اخیر",
+    cTarget: "هدف", cKind: "نوع", cLatency: "تأخیر", cLoss: "افت بسته", cUptime: "آپ‌تایم ۲۴ ساعت", cTrend: "روند",
+    cpu: "پردازنده", ram: "حافطه", disk: "دیسک", net: "شبکه",
+    cpuSub: "بار روی همه هسته‌ها", ramSub: "از {total} گیگابایت در حال استفاده", diskSub: "از {total} گیگابایت پر شده", netSub: "دریافت / ارسال در همین لحطه",
+    up: "سالم", down: "قطع", warn: "کند", pending: "در انتطار اولین بررسی",
+    kindPing: "پینگ", kindHttp: "اچ‌تی‌تی‌پی", kindTcp: "تی‌سی‌پی",
+    fHost: "نشانی", fLast: "آخرین بررسی", fCode: "کد پاسخ", fSsl: "انقضای گواهی تا", fMin: "کمترین تأخیر", fAvg: "میانگین تأخیر", fMax: "بیشترین تأخیر", fChecks: "تعداد نمونه‌ها",
+    days: "{n} روز", none: "ندارد",
+    noTargets: "هنوز هدفی تعریف نشده",
+    noTargetsHint: "هدف‌ها را در فایل config.json اضافه کنید و سرویس را دوباره اجرا کنید.",
+    noEvents: "تا حالا مشکلی پیش نآمده. اگر هدفی قطع شود، برگردد یا گواهی‌اش نزدیک انقضا باشد، همین‌جا ثبت می‌شود.",
+    errTitle: "ارتباط با سرویس NetShow برقرار نشد",
+    errBody: "مطمئن شوید سرویس در حال اجراست (uvicorn app.main:app) و از این آدرس در دسترس است. برای اینکه چیدمان را ببینید، داده‌ی نمایشی نشان داده می‌شود.",
+    retry: "تلاش دوباره", demoFlag: "داده‌ی نمایشی",
+    stampNow: "همین حالا به‌روز شد", stampMin: "{n} دقیقه پیش به‌روز شد",
+    footInterval: "بررسی‌ها هر {n} ثانیه انجام می‌شود",
+    evDown: "پاسخ نمی‌دهد", evUp: "دوباره در دسترس است", evSsl: "گواهی تا {n} روز دیگر منقضی می‌شود"
+  }
+};
+
+let lang = localStorage.getItem("netshow.lang") || ((navigator.language || "").startsWith("fa") ? "fa" : "en");
+if (!["en", "fa"].includes(lang)) lang = "en";
+let snapshot = null, demo = false, loading = true, fetchedAt = null;
+const open = new Set();
+
+const t = (k, vars) => {
+  let s = T[lang][k] || k;
+  if (vars) for (const [key, v] of Object.entries(vars)) s = s.replace("{" + key + "}", v);
+  return s;
+};
+const FA_D = "۰۱۲۳۴۵۶۷۸۹";
+const num = v => lang === "fa" ? String(v).replace(/\d/g, d => FA_D[+d]) : String(v);
+const clock = iso => {
+  if (!iso) return t("none");
+  const d = new Date(iso);
+  if (isNaN(d)) return t("none");
+  return num(d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
+};
+
+/* ---------------- sample snapshot, only used when the API is unreachable ---------------- */
+function sample(){
+  const series = (base, jitter, drops = []) => Array.from({ length: 36 }, (_, i) => ({
+    ts: new Date(Date.now() - (35 - i) * 60000).toISOString(),
+    up: !drops.includes(i),
+    latency_ms: drops.includes(i) ? null : +(base + Math.sin(i / 3) * jitter + Math.random() * jitter).toFixed(1)
+  }));
+  return {
+    generated_at: new Date().toISOString(),
+    interval_seconds: 60,
+    system: { cpu: 23.4, ram: 61.2, ram_total_gb: 16, disk: 47.8, disk_total_gb: 512, net_recv_kbps: 812, net_sent_kbps: 143 },
+    targets: [
+      { name: "Home router", kind: "ping", host: "192.168.1.1", up: true, latency_ms: 2.1, packet_loss: 0, uptime_24h: 100, last_check: new Date().toISOString(), history: series(2, 0.6) },
+      { name: "Cloudflare DNS", kind: "ping", host: "1.1.1.1", up: true, latency_ms: 41.6, packet_loss: 0, uptime_24h: 99.8, last_check: new Date().toISOString(), history: series(40, 5) },
+      { name: "Company API", kind: "http", host: "https://api.example.com/health", up: false, latency_ms: null, packet_loss: null, status_code: 503, uptime_24h: 91.4, last_check: new Date().toISOString(), detail: "HTTP 503 Service Unavailable", history: series(180, 30, [30, 31, 32, 33, 34, 35]) },
+      { name: "Marketing site", kind: "http", host: "https://example.com", up: true, latency_ms: 268.4, packet_loss: null, status_code: 200, ssl_days_left: 12, uptime_24h: 100, last_check: new Date().toISOString(), history: series(240, 45) },
+      { name: "Postgres host", kind: "ping", host: "10.0.0.14", up: true, latency_ms: 0.8, packet_loss: 2.5, uptime_24h: 99.1, last_check: new Date().toISOString(), history: series(1, 0.4, [18]) }
+    ],
+    events: [
+      { ts: new Date(Date.now() - 4 * 60000).toISOString(), target: "Company API", kind: "down", message: "HTTP 503" },
+      { ts: new Date(Date.now() - 47 * 60000).toISOString(), target: "Marketing site", kind: "ssl", ssl_days: 12 },
+      { ts: new Date(Date.now() - 96 * 60000).toISOString(), target: "Postgres host", kind: "up" },
+      { ts: new Date(Date.now() - 104 * 60000).toISOString(), target: "Postgres host", kind: "down", message: "100% packet loss" }
+    ]
+  };
+}
+
+/* ---------------- data ---------------- */
+async function load(){
+  loading = !snapshot;
+  render();
+  const icon = document.getElementById("refreshIcon");
+  icon.classList.add("spin");
+  try {
+    const res = await fetch("api/status", { headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error(res.status);
+    snapshot = await res.json();
+    demo = false;
+    document.getElementById("banner").dataset.show = "false";
+  } catch (e) {
+    demo = true;
+    snapshot = sample();
+    document.getElementById("banner").dataset.show = "true";
+  }
+  fetchedAt = Date.now();
+  loading = false;
+  icon.classList.remove("spin");
+  render();
+}
+
+/* ---------------- pieces ---------------- */
+function meter(label, value, sub, unit = "%"){
+  const v = typeof value === "number" ? value : 0;
+  const load = v >= 90 ? "hot" : v >= 75 ? "warn" : "ok";
+  return `<div class="meter">
+    <div class="top">
+      <span class="label">${label}</span>
+      <span class="val">${num(v.toFixed(1))}<small>${unit}</small></span>
+    </div>
+    <div class="track"><span style="inline-size:${Math.min(v, 100)}%" data-load="${load}"></span></div>
+    <div class="sub">${sub}</div>
+  </div>`;
+}
+
+function sparkline(history){
+  const pts = (history || []).slice(-36);
+  const vals = pts.map(p => p.latency_ms).filter(v => typeof v === "number");
+  if (!vals.length) return `<svg viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true"><line x1="0" y1="15" x2="120" y2="15" stroke="var(--rule)" stroke-width="1"/></svg>`;
+  const min = Math.min(...vals), max = Math.max(...vals), span = max - min || 1;
+  const x = i => (pts.length < 2 ? 60 : (i / (pts.length - 1)) * 120);
+  const y = v => 27 - ((v - min) / span) * 24;
+  let d = "", started = false;
+  pts.forEach((p, i) => {
+    if (typeof p.latency_ms !== "number") { started = false; return; }
+    d += (started ? " L" : " M") + x(i).toFixed(1) + " " + y(p.latency_ms).toFixed(1);
+    started = true;
+  });
+  const misses = pts.map((p, i) => p.up ? "" : `<circle cx="${x(i).toFixed(1)}" cy="27" r="2" fill="var(--brick)"/>`).join("");
+  return `<svg viewBox="0 0 120 30" preserveAspectRatio="none" role="img" aria-label="latency trend">
+    <path d="${d}" fill="none" stroke="var(--rust)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    ${misses}</svg>`;
+}
+
+function state(tg){
+  if (tg.up === null || tg.up === undefined) return "pending";
+  if (!tg.up) return "down";
+  if ((tg.packet_loss || 0) > 1 || (tg.ssl_days_left != null && tg.ssl_days_left <= 14) || (tg.latency_ms || 0) > 800) return "warn";
+  return "up";
+}
+
+function row(tg){
+  const st = state(tg);
+  const isOpen = open.has(tg.name);
+  const kind = tg.kind === "ping" ? t("kindPing") : tg.kind === "http" ? t("kindHttp") : t("kindTcp");
+  const dim = `<span class="metric dim">${t("none")}</span>`;
+  const lat = tg.latency_ms == null ? dim
+    : `<span class="metric">${num(tg.latency_ms.toFixed(tg.latency_ms < 10 ? 1 : 0))}<small> ms</small></span>`;
+  const loss = tg.packet_loss == null ? dim
+    : `<span class="metric${tg.packet_loss > 0 ? " bad" : ""}">${num(tg.packet_loss.toFixed(0))}<small> %</small></span>`;
+  const uptime = tg.uptime_24h == null ? dim
+    : `<span class="metric">${num(tg.uptime_24h.toFixed(1))}<small> %</small></span>`;
+  const vals = (tg.history || []).map(p => p.latency_ms).filter(v => typeof v === "number");
+  const stat = v => v == null ? t("none") : num(v.toFixed(1)) + " ms";
+  return `<div class="row" data-open="${isOpen}" data-name="${tg.name}">
+    <button class="row-main" aria-expanded="${isOpen}">
+      <span class="dot" data-s="${st}" title="${t(st)}"></span>
+      <span><span class="name">${tg.name}</span><span class="host">${tg.host}</span></span>
+      <span class="cells">
+        <span><span class="m-label">${t("cKind")}</span><span class="chip">${kind}</span></span>
+        <span><span class="m-label">${t("cLatency")}</span>${lat}</span>
+        <span><span class="m-label">${t("cLoss")}</span>${loss}</span>
+        <span><span class="m-label">${t("cUptime")}</span>${uptime}</span>
+        <span class="spark">${sparkline(tg.history)}</span>
+      </span>
+      <span class="caret" aria-hidden="true">▾</span>
+    </button>
+    <div class="detail">
+      <dl class="facts">
+        <div class="fact"><dt>${t("fHost")}</dt><dd>${tg.host}</dd></div>
+        <div class="fact"><dt>${t("fLast")}</dt><dd>${clock(tg.last_check)}</dd></div>
+        ${tg.status_code != null ? `<div class="fact"><dt>${t("fCode")}</dt><dd>${num(tg.status_code)}</dd></div>` : ""}
+        ${tg.ssl_days_left != null ? `<div class="fact"><dt>${t("fSsl")}</dt><dd class="txt">${t("days", { n: num(tg.ssl_days_left) })}</dd></div>` : ""}
+        <div class="fact"><dt>${t("fMin")}</dt><dd>${stat(vals.length ? Math.min(...vals) : null)}</dd></div>
+        <div class="fact"><dt>${t("fAvg")}</dt><dd>${stat(vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null)}</dd></div>
+        <div class="fact"><dt>${t("fMax")}</dt><dd>${stat(vals.length ? Math.max(...vals) : null)}</dd></div>
+        <div class="fact"><dt>${t("fChecks")}</dt><dd>${num((tg.history || []).length)}</dd></div>
+      </dl>
+      ${tg.detail && tg.up === false ? `<p class="note">${tg.detail}</p>` : ""}
+    </div>
+  </div>`;
+}
+
+function evLine(e){
+  const k = e.kind === "ssl" ? "ssl" : e.kind;
+  const days = e.ssl_days != null ? e.ssl_days : 0;
+  const msg = e.kind === "down" ? t("evDown") : e.kind === "up" ? t("evUp") : t("evSsl", { n: num(days) });
+  const extra = e.kind === "down" && e.message ? ` <span class="host">${e.message}</span>` : "";
+  return `<div class="ev" data-k="${k}">
+    <time>${clock(e.ts)}</time><span class="tick"></span>
+    <p><b>${e.target}</b> ${msg}${extra}</p>
+  </div>`;
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  const html = document.documentElement;
+  html.lang = lang;
+  html.dir = lang === "fa" ? "rtl" : "ltr";
+  document.getElementById("langEn").setAttribute("aria-pressed", lang === "en");
+  document.getElementById("langFa").setAttribute("aria-pressed", lang === "fa");
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+  document.getElementById("demoFlag").dataset.show = demo ? "true" : "false";
+
+  const strip = document.getElementById("strip"), rows = document.getElementById("rows"), evs = document.getElementById("evs");
+
+  if (loading && !snapshot){
+    strip.innerHTML = Array.from({ length: 4 }, () => `<div class="meter"><div class="bar" style="inline-size:40%"></div><div class="track"></div><div class="bar" style="inline-size:65%;margin-top:12px"></div></div>`).join("");
+    rows.innerHTML = Array.from({ length: 4 }, () => `<div class="skel"><div class="bar" style="inline-size:32%"></div><div class="bar" style="inline-size:72%"></div></div>`).join("");
+    evs.innerHTML = `<div class="skel"><div class="bar" style="inline-size:55%"></div></div>`;
+    return;
+  }
+
+  const s = snapshot.system || {};
+  strip.innerHTML = [
+    meter(t("cpu"), s.cpu, t("cpuSub")),
+    meter(t("ram"), s.ram, t("ramSub", { total: num(s.ram_total_gb || 0) })),
+    meter(t("disk"), s.disk, t("diskSub", { total: num(s.disk_total_gb || 0) })),
+    `<div class="meter"><div class="top"><span class="label">${t("net")}</span>
+      <span class="val">${num(Math.round(s.net_recv_kbps || 0))}<small> kb/s</small></span></div>
+      <div class="track"><span style="inline-size:${Math.min((s.net_recv_kbps || 0) / 20, 100)}%"></span></div>
+      <div class="sub">${num(Math.round(s.net_recv_kbps || 0))} ↓ · ${num(Math.round(s.net_sent_kbps || 0))} ↑ · ${t("netSub")}</div></div>`
+  ].join("");
+
+  const list = snapshot.targets || [];
+  document.getElementById("tCount").textContent = list.length
+    ? num(list.filter(x => x.up).length) + " / " + num(list.length) : "";
+  rows.innerHTML = list.length
+    ? list.map(row).join("")
+    : `<div class="empty"><h3>${t("noTargets")}</h3><p>${t("noTargetsHint")}</p></div>`;
+  rows.querySelectorAll(".row-main").forEach(btn => btn.addEventListener("click", () => {
+    const name = btn.parentElement.dataset.name;
+    open.has(name) ? open.delete(name) : open.add(name);
+    render();
+  }));
+
+  const ev = snapshot.events || [];
+  document.getElementById("eCount").textContent = ev.length ? num(ev.length) : "";
+  evs.innerHTML = ev.length ? ev.map(evLine).join("") : `<div class="empty"><p style="max-width:56ch;margin:0 auto">${t("noEvents")}</p></div>`;
+
+  document.getElementById("pulse").dataset.state = list.some(x => x.up === false) ? "down" : "up";
+  document.getElementById("footInterval").textContent = t("footInterval", { n: num(snapshot.interval_seconds || 60) });
+  stamp();
+}
+
+function stamp(){
+  if (!fetchedAt) return;
+  const mins = Math.floor((Date.now() - fetchedAt) / 60000);
+  document.getElementById("stamp").textContent = mins < 1 ? t("stampNow") : t("stampMin", { n: num(mins) });
+}
+
+/* ---------------- wiring ---------------- */
+document.getElementById("refresh").addEventListener("click", load);
+document.getElementById("retry").addEventListener("click", load);
+document.getElementById("langEn").addEventListener("click", () => setLang("en"));
+document.getElementById("langFa").addEventListener("click", () => setLang("fa"));
+function setLang(l){ lang = l; localStorage.setItem("netshow.lang", l); render(); }
+
+load();
+setInterval(load, 60000);
+setInterval(stamp, 20000);
+</script>
+</body>
+</html>
