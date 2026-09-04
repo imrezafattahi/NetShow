@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NetShow · Setup guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: oklch(0.973 0.011 78);
+    --paper-2: oklch(0.949 0.015 78);
+    --paper-3: oklch(0.922 0.019 78);
+    --ink: oklch(0.255 0.022 55);
+    --ink-2: oklch(0.452 0.020 55);
+    --ink-3: oklch(0.625 0.016 55);
+    --rule: oklch(0.882 0.014 78);
+    --rule-soft: oklch(0.921 0.012 78);
+    --rust: oklch(0.545 0.160 42);
+    --rust-soft: oklch(0.905 0.048 50);
+    --moss: oklch(0.545 0.100 152);
+    --amber-soft: oklch(0.935 0.055 82);
+    --code-bg: oklch(0.965 0.014 78);
+    --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px; --s-8:72px;
+    --font-body:'Vazirmatn',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --font-display:'Instrument Serif','Vazirmatn',Georgia,serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --out: cubic-bezier(0.16,1,0.3,1);
+    --out-q: cubic-bezier(0.25,1,0.5,1);
+  }
+  html[lang="fa"]{ --font-display:'Vazirmatn',serif; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--font-body); font-size:16px; line-height:1.62; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ margin:0; text-wrap:balance; }
+  p{ margin:0 0 var(--s-4); text-wrap:pretty; max-width:72ch; }
+  a{ color:var(--rust); text-underline-offset:3px; }
+  code{ font-family:var(--font-mono); font-size:0.875em; font-feature-settings:"liga" 0; background:var(--paper-3); padding:1px 5px; border-radius:4px; direction:ltr; unicode-bidi:isolate; }
+
+  .top{ border-bottom:1px solid var(--ink); }
+  .top-in{ max-width:1180px; margin:0 auto; padding:var(--s-5) var(--s-4); display:flex; flex-wrap:wrap; align-items:flex-end; gap:var(--s-4); justify-content:space-between; }
+  .kicker{ font-size:0.6875rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-3); }
+  html[lang="fa"] .kicker{ letter-spacing:0; text-transform:none; font-size:0.8125rem; }
+  h1{ font-family:var(--font-display); font-size:clamp(2.1rem,5.5vw,3.1rem); line-height:1.02; letter-spacing:-0.015em; margin-top:var(--s-2); }
+  html[lang="fa"] h1{ font-weight:700; letter-spacing:-0.02em; line-height:1.2; }
+  h1 i{ font-style:italic; color:var(--rust); }
+  .lede{ color:var(--ink-2); max-width:60ch; margin-top:var(--s-3); margin-bottom:0; }
+  .bar{ display:flex; align-items:center; gap:var(--s-3); margin-inline-start:auto; }
+
+  button{ font:inherit; color:inherit; cursor:pointer; }
+  .langs{ display:flex; border:1px solid var(--rule); border-radius:6px; overflow:hidden; }
+  .langs button{ background:none; border:0; padding:8px 12px; min-height:38px; font-size:0.8125rem; color:var(--ink-2); transition:background .14s var(--out-q); }
+  .langs button+button{ border-inline-start:1px solid var(--rule); }
+  .langs button[aria-pressed="true"]{ background:var(--ink); color:var(--paper); }
+  .langs button:focus-visible{ outline:2px solid var(--rust); outline-offset:-2px; }
+  .ghost{ display:inline-flex; align-items:center; gap:6px; text-decoration:none; border:1px solid var(--rule); border-radius:6px; padding:8px 13px; min-height:38px; font-size:0.875rem; color:var(--ink); transition:background .14s var(--out-q),border-color .14s var(--out-q); }
+  .ghost:hover{ background:var(--paper-2); border-color:var(--ink-3); }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:var(--s-6) var(--s-4) var(--s-8); display:grid; gap:var(--s-7); }
+  @media (min-width:1000px){ .wrap{ grid-template-columns:236px minmax(0,1fr); gap:var(--s-8); padding-top:var(--s-7); } }
+
+  nav.toc{ display:none; }
+  @media (min-width:1000px){
+    nav.toc{ display:block; position:sticky; top:var(--s-6); align-self:start; max-height:calc(100vh - 96px); overflow:auto; }
+  }
+  .toc-title{ font-size:0.6875rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-3); margin-bottom:var(--s-3); }
+  html[lang="fa"] .toc-title{ letter-spacing:0; text-transform:none; font-size:0.8125rem; }
+  .toc ol{ list-style:none; margin:0; padding:0; }
+  .toc a{ display:grid; grid-template-columns:26px 1fr; gap:var(--s-2); padding:5px 0; font-size:0.875rem; color:var(--ink-2); text-decoration:none; transition:color .14s var(--out-q); }
+  .toc a:hover{ color:var(--rust); }
+  .toc a.on{ color:var(--ink); font-weight:500; }
+  .toc a span:first-child{ font-family:var(--font-mono); font-size:0.75rem; color:var(--ink-3); padding-top:2px; }
+  .toc a.on span:first-child{ color:var(--rust); }
+
+  .step{ padding-block:var(--s-6); border-top:1px solid var(--rule-soft); scroll-margin-top:var(--s-6); }
+  .step:first-child{ border-top:0; padding-top:0; }
+  .step-head{ display:grid; grid-template-columns:auto 1fr; gap:var(--s-4); align-items:baseline; margin-bottom:var(--s-4); }
+  .step-n{ font-family:var(--font-display); font-size:2.6rem; line-height:0.8; color:var(--rust); font-variant-numeric:lining-nums; }
+  html[lang="fa"] .step-n{ font-weight:700; font-size:1.9rem; line-height:1; }
+  .step h2{ font-family:var(--font-display); font-size:1.6rem; letter-spacing:-0.01em; }
+  html[lang="fa"] .step h2{ font-weight:700; font-size:1.4rem; }
+  .step-body{ max-width:72ch; }
+  ul.plain{ margin:0 0 var(--s-4); padding-inline-start:1.15em; max-width:72ch; }
+  ul.plain li{ margin-bottom:6px; }
+
+  .snip{ margin:0 0 var(--s-4); border:1px solid var(--rule); border-radius:10px; background:var(--code-bg); overflow:hidden; }
+  .snip-top{ display:flex; align-items:center; justify-content:space-between; gap:var(--s-3); padding:6px 6px 6px var(--s-3); border-bottom:1px solid var(--rule-soft); }
+  .os{ display:flex; gap:2px; }
+  .os button{ background:none; border:0; padding:4px 10px; border-radius:5px; font-size:0.75rem; color:var(--ink-3); transition:background .14s var(--out-q),color .14s var(--out-q); }
+  .os button[aria-pressed="true"]{ background:var(--paper-3); color:var(--ink); }
+  .snip-label{ font-family:var(--font-mono); font-size:0.6875rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-3); }
+  .copy{ background:none; border:1px solid transparent; border-radius:5px; padding:4px 9px; font-size:0.75rem; color:var(--ink-3); transition:color .14s var(--out-q),background .14s var(--out-q); }
+  .copy:hover{ background:var(--paper-3); color:var(--ink); }
+  .copy[data-done="true"]{ color:var(--moss); }
+  pre{ margin:0; padding:var(--s-3) var(--s-4) var(--s-4); overflow-x:auto; direction:ltr; text-align:left; }
+  pre code{ background:none; padding:0; font-size:0.8125rem; line-height:1.8; white-space:pre; }
+  pre code .c{ color:var(--ink-3); }
+
+  .callout{ margin:0 0 var(--s-4); padding:var(--s-3) var(--s-4); border-radius:10px; background:var(--paper-2); font-size:0.9375rem; color:var(--ink-2); max-width:72ch; }
+  .callout[data-kind="warn"]{ background:var(--amber-soft); color:var(--ink); }
+  .callout b{ color:var(--ink); font-weight:500; }
+
+  table{ inline-size:100%; border-collapse:collapse; margin:0 0 var(--s-4); font-size:0.9375rem; }
+  th,td{ text-align:start; padding:9px var(--s-3) 9px 0; border-bottom:1px solid var(--rule-soft); vertical-align:top; }
+  html[lang="fa"] th, html[lang="fa"] td{ padding:9px 0 9px var(--s-3); }
+  th{ font-size:0.6875rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); font-weight:400; }
+  html[lang="fa"] th{ letter-spacing:0; text-transform:none; font-size:0.8125rem; }
+  td code{ white-space:nowrap; }
+
+  footer{ border-top:1px solid var(--rule); margin-top:var(--s-7); padding-top:var(--s-4); font-size:0.8125rem; color:var(--ink-3); display:flex; flex-wrap:wrap; gap:var(--s-4); justify-content:space-between; max-width:72ch; }
+  @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div>
+      <div class="kicker" id="kicker"></div>
+      <h1>Net<i>Show</i></h1>
+      <p class="lede" id="lede"></p>
+    </div>
+    <div class="bar">
+      <a class="ghost" href="https://github.com/imrezafattahi/NetShow" id="repoLink"></a>
+      <div class="langs" role="group" aria-label="Language">
+        <button id="en" aria-pressed="true">EN</button>
+        <button id="fa" aria-pressed="false">فارسی</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc"><div class="toc-title" id="tocTitle"></div><ol id="toc"></ol></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+const UI = {
+  en: { kicker:"Setup guide", lede:"Everything from a clean machine to a running dashboard, alerts and a published page. Roughly fifteen minutes.", repo:"Repository", toc:"On this page", copy:"Copy", copied:"Copied", terminal:"terminal", file:"file", back:"NetShow · MIT license", edit:"Found a mistake? Open an issue on GitHub." },
+  fa: { kicker:"راهنمای نصب و راه‌اندازی", lede:"از یک سیستم خالی تا داشبورد در حال اجرا، هشدارها و صفحه‌ی منتشرشده. حدوداً پانزده دقیقه.", repo:"مخزن پروژه", toc:"در این صفحه", copy:"کپی", copied:"کپی شد", terminal:"ترمینال", file:"فایل", back:"NetShow · مجوز MIT", edit:"جایی اشتباه دیدید؟ در گیت‌هاب ایشو باز کنید." }
+};
+
+const STEPS = [
+  {
+    id:"what",
+    en:{ h:"What you are building", p:[
+      "NetShow is a small Python service that keeps an eye on a handful of hosts and websites. Every minute it pings each host, requests each URL, checks TLS certificate expiry, samples CPU, memory and disk on the machine it runs on, and writes all of it to a SQLite file.",
+      "The result is served as JSON plus a single-page dashboard, in English and Persian. Nothing here needs a paid service: GitHub, Python and a laptop are enough."
+    ], list:["Ping: latency and packet loss","HTTP and HTTPS: status code and response time","TLS: days left before the certificate expires","Host: processor, memory, disk, network throughput","Alerts: optional Telegram message when something drops"] },
+    fa:{ h:"چه چیزی می‌سازیم", p:[
+      "NetShow یک سرویس کوچک پایتونی است که چند سرور و وب‌سایت را زیر نظر می‌گیرد. هر دقیقه به هر میزبان پینگ می‌زند، هر آدرس را صدا می‌زند، انقضای گواهی TLS را بررسی می‌کند، مصرف پردازنده و حافظه و دیسک همان ماشین را نمونه‌برداری می‌کند و همه را در یک فایل SQLite ذخیره می‌کند.",
+      "خروجی هم به شکل JSON و هم به شکل یک داشبورد تک‌صفحه‌ای، به فارسی و انگلیسی، ارائه می‌شود. برای هیچ بخشی سرویس پولی لازم نیست: گیت‌هاب، پایتون و یک لپ‌تاپ کافی است."
+    ], list:["پینگ: تأخیر و افت بسته","HTTP و HTTPS: کد پاسخ و زمان پاسخ","TLS: تعداد روز باقی‌مانده تا انقضای گواهی","میزبان: پردازنده، حافظه، دیسک و ترافیک شبکه","هشدار: پیام تلگرام اختیاری وقتی چیزی قطع شود"] }
+  },
+  {
+    id:"prereq",
+    en:{ h:"Prerequisites", list:["Python 3.11 or newer","Git","The system ping command (already present on Windows, macOS and most Linux images)","A GitHub account, free plan is fine"],
+      p:["Check your versions before anything else:"],
+      code:{ unix:"python3 --version\\ngit --version\\nping -c 1 1.1.1.1", win:"python --version\\ngit --version\\nping -n 1 1.1.1.1" } },
+    fa:{ h:"پیش‌نیازها", list:["پایتون ۳.۱۱ یا جدیدتر","گیت","دستور ping سیستم (روی ویندوز، مک و بیشتر توزیع‌های لینوکس از قبل هست)","یک حساب گیت‌هاب، پلن رایگان هم کافی است"],
+      p:["قبل از هر کاری نسخه‌ها را بررسی کنید:"],
+      code:{ unix:"python3 --version\\ngit --version\\nping -c 1 1.1.1.1", win:"python --version\\ngit --version\\nping -n 1 1.1.1.1" } }
+  },
+  {
+    id:"clone",
+    en:{ h:"Get the code", p:["Clone the repository and step into it."], code:{ unix:"git clone https://github.com/imrezafattahi/NetShow.git\\ncd NetShow", win:"git clone https://github.com/imrezafattahi/NetShow.git\\ncd NetShow" },
+      note:"If you plan to change the project, fork it on GitHub first and clone your fork instead." },
+    fa:{ h:"گرفتن کد", p:["مخزن را کلون کنید و داخل پوشه بروید."], code:{ unix:"git clone https://github.com/imrezafattahi/NetShow.git\\ncd NetShow", win:"git clone https://github.com/imrezafattahi/NetShow.git\\ncd NetShow" },
+      note:"اگر می‌خواهید پروژه را تغییر دهید، اول در گیت‌هاب Fork بگیرید و فورک خودتان را کلون کنید." }
+  },
+  {
+    id:"venv",
+    en:{ h:"Create a virtual environment", p:["Keep the dependencies out of your system Python."],
+      code:{ unix:"python3 -m venv .venv\\nsource .venv/bin/activate", win:"python -m venv .venv\\n.venv\\\\Scripts\\\\activate" },
+      note:"Your prompt should now start with (.venv). Run deactivate when you are done for the day." },
+    fa:{ h:"ساخت محیط مجازی", p:["وابستگی‌ها را از پایتون سیستم جدا نگه دارید."],
+      code:{ unix:"python3 -m venv .venv\\nsource .venv/bin/activate", win:"python -m venv .venv\\n.venv\\\\Scripts\\\\activate" },
+      note:"از این به بعد باید ابتدای خط فرمان (.venv) دیده شود. برای خروج، دستور deactivate را بزنید." }
+  },
+  {
+    id:"install",
+    en:{ h:"Install dependencies", p:["Four packages, nothing heavy."], code:{ unix:"pip install --upgrade pip\\npip install -r requirements.txt", win:"python -m pip install --upgrade pip\\npip install -r requirements.txt" } },
+    fa:{ h:"نصب وابستگی‌ها", p:["چهار پکیج، هیچ‌کدام سنگین نیستند."], code:{ unix:"pip install --upgrade pip\\npip install -r requirements.txt", win:"python -m pip install --upgrade pip\\npip install -r requirements.txt" } }
+  },
+  {
+    id:"config",
+    en:{ h:"Choose what to watch", p:["Open <code>config.json</code> and describe your targets. A ping target needs a host, an HTTP target needs a URL. That is the whole configuration format."],
+      file:"config.json",
+      code:{ unix:'{\\n  "interval_seconds": 60,\\n  "history_days": 7,\\n  "targets": [\\n    { "name": "Home router", "kind": "ping", "host": "192.168.1.1" },\\n    { "name": "Cloudflare DNS", "kind": "ping", "host": "1.1.1.1" },\\n    { "name": "My site", "kind": "http", "url": "https://example.com" }\\n  ],\\n  "alerts": { "fail_threshold": 2, "ssl_warn_days": 14 }\\n}' },
+      note:"TLS expiry is checked automatically for every https URL. No extra setting needed." },
+    fa:{ h:"انتخاب اهداف پایش", p:["فایل <code>config.json</code> را باز کنید و اهداف خود را وارد کنید. هدف پینگ به یک host نیاز دارد و هدف HTTP به یک url. کل قالب تنظیمات همین است."],
+      file:"config.json",
+      code:{ unix:'{\\n  "interval_seconds": 60,\\n  "history_days": 7,\\n  "targets": [\\n    { "name": "روتر خانه", "kind": "ping", "host": "192.168.1.1" },\\n    { "name": "DNS کلادفلر", "kind": "ping", "host": "1.1.1.1" },\\n    { "name": "سایت من", "kind": "http", "url": "https://example.com" }\\n  ],\\n  "alerts": { "fail_threshold": 2, "ssl_warn_days": 14 }\\n}' },
+      note:"انقضای گواهی TLS برای هر آدرس https به‌صورت خودکار بررسی می‌شود و تنظیم جداگانه‌ای لازم ندارد." }
+  },
+  {
+    id:"run",
+    en:{ h:"Run it", p:["Start the service, then open the dashboard in a browser."],
+      code:{ unix:"uvicorn app.main:app --reload --port 8000\\n# then open http://127.0.0.1:8000", win:"uvicorn app.main:app --reload --port 8000\\nrem then open http://127.0.0.1:8000" },
+      note:"The first check cycle starts immediately, but sparklines need a few minutes of history before they say anything useful. Impatient? Send POST /api/run to force a cycle." },
+    fa:{ h:"اجرای پروژه", p:["سرویس را اجرا کنید و داشبورد را در مرورگر باز کنید."],
+      code:{ unix:"uvicorn app.main:app --reload --port 8000\\n# سپس http://127.0.0.1:8000 را باز کنید", win:"uvicorn app.main:app --reload --port 8000\\nrem سپس http://127.0.0.1:8000 را باز کنید" },
+      note:"اولین چرخه‌ی بررسی بلافاصله اجرا می‌شود، اما نمودارها چند دقیقه داده لازم دارند تا معنی‌دار شوند. اگر عجله دارید، درخواست POST /api/run را بفرستید." }
+  },
+  {
+    id:"telegram",
+    en:{ h:"Telegram alerts (optional)", p:["Message <code>@BotFather</code> in Telegram, send <code>/newbot</code>, and copy the token it gives you. Then send any message to your new bot and read your chat id from <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code>."],
+      code:{ unix:'export NETSHOW_TELEGRAM_TOKEN="123456:AA..."\\nexport NETSHOW_TELEGRAM_CHAT_ID="987654321"\\nuvicorn app.main:app --port 8000', win:'set NETSHOW_TELEGRAM_TOKEN=123456:AA...\\nset NETSHOW_TELEGRAM_CHAT_ID=987654321\\nuvicorn app.main:app --port 8000' },
+      warn:"Never commit the token. It lives in environment variables only, which is why config.json has no field for it." },
+    fa:{ h:"هشدار تلگرام (اختیاری)", p:["در تلگرام به <code>@BotFather</code> پیام بدهید، دستور <code>/newbot</code> را بفرستید و توکنی که می‌دهد را بردارید. سپس به ربات خودتان یک پیام بفرستید و شناسه‌ی چت را از <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code> بخوانید."],
+      code:{ unix:'export NETSHOW_TELEGRAM_TOKEN="123456:AA..."\\nexport NETSHOW_TELEGRAM_CHAT_ID="987654321"\\nuvicorn app.main:app --port 8000', win:'set NETSHOW_TELEGRAM_TOKEN=123456:AA...\\nset NETSHOW_TELEGRAM_CHAT_ID=987654321\\nuvicorn app.main:app --port 8000' },
+      warn:"توکن را هرگز کامیت نکنید. توکن فقط از متغیرهای محیطی خوانده می‌شود و به همین دلیل در config.json فیلدی برای آن وجود ندارد." }
+  },
+  {
+    id:"docker",
+    en:{ h:"Docker (optional)", p:["The image installs <code>iputils-ping</code> so ICMP checks work inside the container."],
+      code:{ unix:"docker build -t netshow .\\ndocker run -p 8000:8000 -v $(pwd)/data:/app/data netshow\\n\\n# or with compose\\ndocker compose up -d", win:"docker build -t netshow .\\ndocker run -p 8000:8000 -v %cd%/data:/app/data netshow\\n\\nrem or with compose\\ndocker compose up -d" } },
+    fa:{ h:"داکر (اختیاری)", p:["ایمیج پکیج <code>iputils-ping</code> را نصب می‌کند تا بررسی‌های ICMP داخل کانتینر کار کنند."],
+      code:{ unix:"docker build -t netshow .\\ndocker run -p 8000:8000 -v $(pwd)/data:/app/data netshow\\n\\n# یا با کامپوز\\ndocker compose up -d", win:"docker build -t netshow .\\ndocker run -p 8000:8000 -v %cd%/data:/app/data netshow\\n\\nrem یا با کامپوز\\ndocker compose up -d" } }
+  },
+  {
+    id:"tests",
+    en:{ h:"Tests and CI", p:["The suite covers the ping output parser, the target model and the API responses. GitHub Actions runs the same command on every push."],
+      code:{ unix:"pytest -q", win:"pytest -q" },
+      note:"The workflow lives in .github/workflows/ci.yml and tests Python 3.11 and 3.12." },
+    fa:{ h:"تست و CI", p:["تست‌ها پارسر خروجی ping، مدل اهداف و پاسخ‌های API را پوشش می‌دهند. GitHub Actions همین دستور را روی هر پوش اجرا می‌کند."],
+      code:{ unix:"pytest -q", win:"pytest -q" },
+      note:"فایل ورک‌فلو در .github/workflows/ci.yml است و روی پایتون ۳.۱۱ و ۳.۱۲ اجرا می‌شود." }
+  },
+  {
+    id:"pages",
+    en:{ h:"Publish this guide", p:["This page is a plain HTML file in the <code>docs/</code> folder, so GitHub Pages can host it for free."],
+      list:["Open your repository on GitHub","Settings, then Pages in the sidebar","Source: Deploy from a branch","Branch: main, folder: /docs, then Save","Wait about a minute, then visit the address GitHub shows you"],
+      note:"The dashboard itself needs the running Python service, so Pages hosts the guide, not the live monitor." },
+    fa:{ h:"انتشار همین راهنما", p:["این صفحه یک فایل HTML ساده در پوشه‌ی <code>docs/</code> است، بنابراین GitHub Pages می‌تواند آن را رایگان میزبانی کند."],
+      list:["مخزن خود را در گیت‌هاب باز کنید","به Settings و بعد Pages بروید","گزینه‌ی Source را روی Deploy from a branch بگذارید","شاخه main و پوشه /docs را انتخاب و ذخیره کنید","حدود یک دقیقه صبر کنید و آدرسی که گیت‌هاب می‌دهد را باز کنید"],
+      note:"داشبورد به سرویس پایتون در حال اجرا نیاز دارد، پس Pages فقط راهنما را میزبانی می‌کند، نه مانیتور زنده را." }
+  },
+  {
+    id:"api",
+    en:{ h:"API reference", table:{ head:["Endpoint","Returns"], rows:[
+      ["GET /api/health","Service liveness and version"],
+      ["GET /api/status","Current snapshot: system metrics, every target with recent history, latest events"],
+      ["GET /api/history?target=NAME&hours=24","Raw samples for one target"],
+      ["GET /api/events?limit=50","Down, recovery and certificate warnings"],
+      ["POST /api/run","Force a check cycle now"] ] },
+      p:["Interactive docs are generated by FastAPI at <code>/docs</code> while the service runs."] },
+    fa:{ h:"مرجع API", table:{ head:["مسیر","خروجی"], rows:[
+      ["GET /api/health","زنده بودن سرویس و نسخه"],
+      ["GET /api/status","وضعیت فعلی: منابع سیستم، همه‌ی اهداف با تاریخچه‌ی اخیر، آخرین رخدادها"],
+      ["GET /api/history?target=NAME&hours=24","نمونه‌های خام یک هدف"],
+      ["GET /api/events?limit=50","قطعی‌ها، بازگشت‌ها و هشدارهای گواهی"],
+      ["POST /api/run","اجرای فوری یک چرخه‌ی بررسی"] ] },
+      p:["مستندات تعاملی را FastAPI روی مسیر <code>/docs</code> در زمان اجرا می‌سازد."] }
+  },
+  {
+    id:"trouble",
+    en:{ h:"When something breaks", table:{ head:["Symptom","Fix"], rows:[
+      ["ping: command not found","Install iputils-ping (Debian, Ubuntu) or use the Docker image, which already has it"],
+      ["Address already in use","Another process holds port 8000. Run with --port 8010"],
+      ["Every target shows n/a","The first cycle has not finished. Wait one interval or call POST /api/run"],
+      ["Latency is empty but the site works","Your network blocks ICMP. Use an http target instead of ping"],
+      ["TLS days left is empty","The target is http, not https, or the handshake failed. Check the detail field"],
+      ["No Telegram message arrives","Send a message to the bot first, otherwise Telegram refuses to deliver to that chat id"] ] } },
+    fa:{ h:"وقتی چیزی کار نمی‌کند", table:{ head:["نشانه","راه‌حل"], rows:[
+      ["ping: command not found","پکیج iputils-ping را نصب کنید (دبیان و اوبونتو) یا از ایمیج داکر استفاده کنید که آن را دارد"],
+      ["Address already in use","پورت ۸۰۰۰ در اختیار پروسه‌ی دیگری است. با ‎--port 8010‎ اجرا کنید"],
+      ["همه‌ی اهداف مقدار «ندارد» نشان می‌دهند","اولین چرخه تمام نشده است. یک بازه صبر کنید یا POST /api/run را صدا بزنید"],
+      ["تأخیر خالی است ولی سایت کار می‌کند","شبکه‌ی شما ICMP را بسته است. از هدف http به جای ping استفاده کنید"],
+      ["روزهای باقی‌مانده‌ی گواهی خالی است","هدف http است نه https، یا هندشیک ناموفق بوده. فیلد detail را ببینید"],
+      ["پیام تلگرام نمی‌آید","اول خودتان به ربات پیام بدهید، وگرنه تلگرام اجازه‌ی ارسال به آن chat id را نمی‌دهد"] ] } }
+  },
+  {
+    id:"tree",
+    en:{ h:"Project layout", file:"tree",
+      code:{ unix:"NetShow/\\n  app/\\n    main.py          FastAPI app and API routes\\n    config.py        reads config.json and env vars\\n    db.py            SQLite storage and queries\\n    scheduler.py     the check loop\\n    alerts.py        Telegram notifications\\n    checks/          ping, http, tls, host metrics\\n    static/          the dashboard\\n  docs/index.html    this guide\\n  tests/             pytest suite\\n  config.json        your targets\\n  Dockerfile\\n  docker-compose.yml" },
+      p:["That is the whole project. Small on purpose: every file has one job and fits on a screen."] },
+    fa:{ h:"ساختار پروژه", file:"tree",
+      code:{ unix:"NetShow/\\n  app/\\n    main.py          اپ FastAPI و مسیرهای API\\n    config.py        خواندن config.json و متغیرهای محیطی\\n    db.py            ذخیره‌سازی و کوئری‌های SQLite\\n    scheduler.py     حلقه‌ی بررسی\\n    alerts.py        اعلان تلگرام\\n    checks/          پینگ، http، گواهی، منابع میزبان\\n    static/          داشبورد\\n  docs/index.html    همین راهنما\\n  tests/             تست‌های pytest\\n  config.json        اهداف شما\\n  Dockerfile\\n  docker-compose.yml" },
+      p:["کل پروژه همین است. عمداً کوچک نگه داشته شده: هر فایل یک وظیفه دارد و در یک صفحه جا می‌شود."] }
+  }
+];
+
+let lang = localStorage.getItem("netshow.lang") || "en";
+let os = localStorage.getItem("netshow.os") || ((navigator.platform || "").startsWith("Win") ? "win" : "unix");
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const FA_D = "۰۱۲۳۴۵۶۷۸۹";
+const nd = n => lang === "fa" ? String(n).replace(/[0-9]/g, d => FA_D[+d]) : String(n);
+
+function snippet(code, label){
+  const single = typeof code === "string" || code.unix === code.win;
+  const body = typeof code === "string" ? code : code[os];
+  const oss = single ? "" : '<div class="os">' +
+    '<button data-os="unix" aria-pressed="' + (os === "unix") + '">macOS / Linux</button>' +
+    '<button data-os="win" aria-pressed="' + (os === "win") + '">Windows</button></div>';
+  const lbl = '<span class="snip-label">' + (label || UI[lang].terminal) + '</span>';
+  const lines = esc(body).split("\\n")
+    .map(l => (l.startsWith("#") || l.startsWith("rem ")) ? '<span class="c">' + l + '</span>' : l)
+    .join("\\n");
+  return '<div class="snip"><div class="snip-top">' + (oss || lbl) +
+    '<button class="copy">' + UI[lang].copy + '</button></div><pre><code>' + lines + '</code></pre></div>';
+}
+
+function render(){
+  const html = document.documentElement;
+  html.lang = lang; html.dir = lang === "fa" ? "rtl" : "ltr";
+  document.getElementById("en").setAttribute("aria-pressed", lang === "en");
+  document.getElementById("fa").setAttribute("aria-pressed", lang === "fa");
+  document.getElementById("kicker").textContent = UI[lang].kicker;
+  document.getElementById("lede").textContent = UI[lang].lede;
+  document.getElementById("repoLink").textContent = UI[lang].repo;
+  document.getElementById("tocTitle").textContent = UI[lang].toc;
+
+  document.getElementById("toc").innerHTML = STEPS.map((s, i) =>
+    '<li><a href="#' + s.id + '"><span>' + nd(String(i + 1).padStart(2, "0")) + '</span><span>' + s[lang].h + '</span></a></li>').join("");
+
+  document.getElementById("main").innerHTML = STEPS.map((s, i) => {
+    const c = s[lang];
+    let out = '<section class="step" id="' + s.id + '"><div class="step-head"><div class="step-n">' +
+      nd(String(i + 1).padStart(2, "0")) + '</div><h2>' + c.h + '</h2></div><div class="step-body">';
+    (c.p || []).forEach(p => out += '<p>' + p + '</p>');
+    if (c.list) out += '<ul class="plain">' + c.list.map(li => '<li>' + li + '</li>').join("") + '</ul>';
+    if (c.code) out += snippet(c.code, c.file ? UI[lang].file + " · " + c.file : null);
+    if (c.table) out += '<table><thead><tr>' + c.table.head.map(h => '<th>' + h + '</th>').join("") +
+      '</tr></thead><tbody>' + c.table.rows.map(r => '<tr><td><code>' + esc(r[0]) + '</code></td><td>' + r[1] + '</td></tr>').join("") +
+      '</tbody></table>';
+    if (c.note) out += '<p class="callout">' + c.note + '</p>';
+    if (c.warn) out += '<p class="callout" data-kind="warn"><b>!</b> ' + c.warn + '</p>';
+    return out + '</div></section>';
+  }).join("") + '<footer><span>' + UI[lang].back + '</span><span>' + UI[lang].edit + '</span></footer>';
+
+  document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
+    const text = b.closest(".snip").querySelector("code").innerText;
+    try { await navigator.clipboard.writeText(text); } catch (e) { /* clipboard blocked */ }
+    b.textContent = UI[lang].copied; b.dataset.done = "true";
+    setTimeout(() => { b.textContent = UI[lang].copy; b.dataset.done = "false"; }, 1600);
+  }));
+  document.querySelectorAll(".os button").forEach(b => b.addEventListener("click", () => {
+    os = b.dataset.os; localStorage.setItem("netshow.os", os);
+    const y = window.scrollY; render(); window.scrollTo(0, y);
+  }));
+  spy();
+}
+
+function spy(){
+  const links = Array.from(document.querySelectorAll(".toc a"));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(a => a.classList.toggle("on", a.hash === "#" + e.target.id));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  STEPS.forEach(s => { const el = document.getElementById(s.id); if (el) io.observe(el); });
+}
+
+document.getElementById("en").addEventListener("click", () => { lang = "en"; localStorage.setItem("netshow.lang", "en"); render(); });
+document.getElementById("fa").addEventListener("click", () => { lang = "fa"; localStorage.setItem("netshow.lang", "fa"); render(); });
+render();
+</script>
+</body>
+</html>
