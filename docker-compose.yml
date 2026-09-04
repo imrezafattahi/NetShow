@@ -1,0 +1,13 @@
+services:
+  netshow:
+    build: .
+    container_name: netshow
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./config.json:/app/config.json:ro
+    environment:
+      - NETSHOW_TELEGRAM_TOKEN=${NETSHOW_TELEGRAM_TOKEN:-}
+      - NETSHOW_TELEGRAM_CHAT_ID=${NETSHOW_TELEGRAM_CHAT_ID:-}
+    restart: unless-stopped

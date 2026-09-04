@@ -1,0 +1,14 @@
+{
+  "interval_seconds": 60,
+  "history_days": 7,
+  "targets": [
+    { "name": "Cloudflare DNS", "kind": "ping", "host": "1.1.1.1" },
+    { "name": "Google DNS", "kind": "ping", "host": "8.8.8.8" },
+    { "name": "GitHub", "kind": "http", "url": "https://github.com" },
+    { "name": "Example site", "kind": "http", "url": "https://example.com" }
+  ],
+  "alerts": {
+    "fail_threshold": 2,
+    "ssl_warn_days": 14
+  }
+}
