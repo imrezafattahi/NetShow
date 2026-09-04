@@ -166,10 +166,6 @@ export NETSHOW_TELEGRAM_CHAT_ID="987654321"
 
 با `docker compose up -d` پروژه بالا می‌آید؛ ایمیج پکیج `iputils-ping` را نصب می‌کند تا بررسی ICMP داخل کانتینر کار کند. تست‌ها با `pytest -q` اجرا می‌شوند و GitHub Actions همان تست‌ها را روی پایتون ۳.۱۱ و ۳.۱۲ اجرا می‌کند.
 
-### راهنمای کامل
 
-آموزش صفر تا صد نصب و راه‌اندازی، به دو زبان، در [این صفحه](https://imrezafattahi.github.io/NetShow/) قرار دارد. برای فعال‌سازی آن در مخزن خودتان: Settings سپس Pages، گزینه‌ی Deploy from a branch، شاخه `main` و پوشه `/docs`.
-
-مجوز پروژه MIT است.
 
 </div>
